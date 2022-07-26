@@ -1,6 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
 import config from '../config';
+import connect from '../store/mongodb';
 
 const app = express();
 
