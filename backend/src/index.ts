@@ -1,19 +1,37 @@
-import express from 'express';
+import express, { Application, json, urlencoded } from 'express';
 import morgan from 'morgan';
 import config from '../config';
-import connect from '../store/mongodb';
-import users from './components/users/network';
+import MongoConnect from '../store/mongodb';
+import userRoutes from './components/users/network';
 
-const app = express();
+class Server {
 
-//MiddleWares
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(morgan('dev'));
+    app: Application
 
-//Routes
-app.use('/api/users', users);
+    constructor() {
+        this.app = express();
+        this.config();
+        this.routes();
+    }
 
-app.listen(config.port, () => {
-    console.log("Server on port: ", config.port)
-})
+    config() {
+        this.app.use(json());
+        this.app.use(urlencoded({ extended: false }));
+        this.app.use(morgan("dev"));
+        MongoConnect();
+    }
+
+    routes() {
+        this.app.use("/api/users", userRoutes);
+    }
+
+    start() {
+        this.app.listen(config.port, () => {
+            console.log("Server on port: ", config.port);
+        })
+    }
+
+}
+
+const server = new Server();
+server.start();
